@@ -185,5 +185,7 @@ object Dyn {
     case obj: DynObject => dyn2Map(obj)
   }
 
+  def <> = new DynObject()   //cannot do {} like javascript
+
 }
 
