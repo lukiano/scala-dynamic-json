@@ -172,6 +172,7 @@ object Dyn {
     case m: Map[_, _] => map2Dyn(m.asInstanceOf[Map[String, Any]])
     case arr: Array[_] => array2Dyn(arr)
     case lis: List[_] => list2Dyn(lis)
+    case dyn: Dyn => dyn
   }
 
   private[Dyn] def from(dyn: Dyn): Any = dyn match {

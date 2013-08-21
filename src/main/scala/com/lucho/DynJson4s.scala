@@ -16,9 +16,11 @@ object DynJson4s {
       }
       case array: DynArray => JArray(array.arr.map(serialize).toList)
     }
+    case null => JNull
   }
 
   def deserialize: PartialFunction[JValue, Dyn] = {
+    case JNull => null
     case JString(str) => new DynString(str)
     case JInt(i) => new DynInt(i)
     case JDouble(d) => new DynDouble(d)
