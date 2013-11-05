@@ -8,6 +8,8 @@ import org.slf4j.LoggerFactory
 import Json4sJacksonSupport._
 import Dyn._
 
+case class SampleCaseClass(address: String, postalCode: Int, city: String)
+
 trait Routes extends Directives {
 
   val log = LoggerFactory.getLogger(classOf[Routes])
@@ -26,6 +28,7 @@ trait Routes extends Directives {
         d.place.longitude = 35
         d.firstArray = Array[String]("a", "b", "c")
         d.secondArray = List[Int](1, 2, 3)
+        d.location = SampleCaseClass("123 Fake St", 1000, "Springfield")
         d
       }
     }

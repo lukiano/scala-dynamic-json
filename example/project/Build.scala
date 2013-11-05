@@ -10,6 +10,6 @@ object Build extends Build {
     .settings(libraryDependencies ++=
        compile(sprayCan, sprayRouting, sprayClient, sprayJson, slf4j, logback,
                akkaActor, akkaAgent, akkaSlf4j, json4sJackson, scalaDynamicJson) ++
-       test(scalaTest, akkaTestkit, sprayTestkit, scalaMock))
+       test(scalaTest, akkaTestkit, sprayTestkit))
 
 }
