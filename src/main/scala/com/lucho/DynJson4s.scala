@@ -13,6 +13,7 @@ object DynJson4s {
         case dou: DynDouble => JDouble(dou.d)
         case dec: DynDecimal => JDecimal(dec.d)
         case bol: DynBool => JBool(bol.b)
+        case pro: DynProduct => Extraction.decompose(pro.p)(json4sJacksonFormats)
       }
       case array: DynArray => JArray(array.arr.map(serialize).toList)
     }
