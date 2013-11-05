@@ -14,13 +14,6 @@ sealed trait Dyn extends scala.Dynamic {
 
 }
 
-/*
-sealed trait Converter[T] {
-  def to(t: T): Dyn
-  def from(d: Dyn): T
-}
-*/
-
 final class DynObject private[lucho] (private[lucho] val map: collection.mutable.Map[String, Dyn]) extends Dyn {
 
   def this() = this(collection.mutable.Map[String, Dyn]())
@@ -107,14 +100,14 @@ object Dyn {
   implicit def decimal2Dyn(d: BigDecimal): DynDecimal = new DynDecimal(d)
   implicit def bool2Dyn(b: Boolean): DynBool = new DynBool(b)
 
-  def dyn2String(d: DynString): String = d.s
-  def dyn2Int(d: DynInt): Int = d.i.toInt
-  def dyn2Long(d: DynInt): Long = d.i.toLong
-  def dyn2BigInt(d: DynInt): BigInt = d.i
-  def dyn2Decimal(d: DynDecimal): BigDecimal = d.d
-  def dyn2Double(d: DynDouble): Double = d.d
-  def dyn2Boolean(d: DynBool): Boolean = d.b
-  def dyn2Product(d: DynProduct): Product = d.p
+  private def dyn2String(d: DynString): String = d.s
+  private def dyn2Int(d: DynInt): Int = d.i.toInt
+  private def dyn2Long(d: DynInt): Long = d.i.toLong
+  private def dyn2BigInt(d: DynInt): BigInt = d.i
+  private def dyn2Decimal(d: DynDecimal): BigDecimal = d.d
+  private def dyn2Double(d: DynDouble): Double = d.d
+  private def dyn2Boolean(d: DynBool): Boolean = d.b
+  private def dyn2Product(d: DynProduct): Product = d.p
 
   implicit def product2Dyn(p: Product) = new DynProduct(p)
 
@@ -128,8 +121,10 @@ object Dyn {
     new DynObject(mutableMap)
   }
 
-  def dyn2Array[T: ClassTag](d: DynArray): Array[T] = d.arr.map(elem => from(elem).asInstanceOf[T]).toArray
-  def dyn2List[T](d: DynArray): List[T] = d.arr.map(elem => from(elem).asInstanceOf[T]).toList
+  implicit def enrich(d: Dyn) = new RichDyn(d)
+
+  def dyn2Array[T: ClassTag](d: DynArray): Array[T] = d.arr.map(as[T])
+  def dyn2List[T: ClassTag](d: DynArray): List[T] = dyn2Array(d).toList
   def dyn2Map(d: DynObject): Map[String, Any] = d.map.map { case (key: String, value: Dyn) => (key, from(value)) }.toMap
 
   private[lucho] def to(any: Any): Dyn = any match {
@@ -147,7 +142,7 @@ object Dyn {
     case dyn: Dyn => dyn
   }
 
-  private[Dyn] def from(dyn: Dyn): Any = dyn match {
+  private[lucho] def from(dyn: Dyn): Any = dyn match {
     case s: DynString => dyn2String(s)
     case i: DynInt => dyn2Int(i)
     case d: DynDouble => dyn2Double(d)
@@ -156,6 +151,12 @@ object Dyn {
     case arr: DynArray => dyn2Array(arr)
     case obj: DynObject => dyn2Map(obj)
     case pro: DynProduct => dyn2Product(pro)
+  }
+
+  private[lucho] def as[T](dyn: Dyn): T = from(dyn).asInstanceOf[T]
+
+  private[lucho] def asArray[T: ClassTag](dyn: Dyn): Array[T] = dyn match {
+    case arr: DynArray => dyn2Array[T](arr)
   }
 
   def <> = new DynObject()   //cannot do {} like javascript

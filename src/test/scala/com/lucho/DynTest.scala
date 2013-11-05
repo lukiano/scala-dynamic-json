@@ -9,15 +9,17 @@ class DynTest extends FunSuite {
     val d = new DynObject()
     d.name = "Bruce"
     d.name = 3
+    assert(3 === d.name.as[Int])
+
     d.place.latitude = 35
     d.place.longitude = 35
     d.firstArray = Array[String]("a", "b", "c")
     d.secondArray = List[Int](1, 2, 3)
-    assert(3 === dyn2Int(d.secondArray(2)))
+    assert(3 === d.secondArray(2).as[Int])
     d.secondArray(2) = 4
-    assert(4 === dyn2Int(d.secondArray(2)))
+    assert(4 === d.secondArray(2).as[Int])
 
-    assert(Array(1, 2, 4) === dyn2Array[Int](d.secondArray))
+    assert(Array(1, 2, 4) === d.secondArray.asArray[Int])
 
   }
 
@@ -30,7 +32,7 @@ class DynTest extends FunSuite {
 
     val serialized = DynJson4s.serialize(d)
     val e: Dyn = DynJson4s.deserialize(serialized)
-    assert(dyn2Map(d) === dyn2Map(e))
+    assert(dyn2Map(d) === e.as[Map[String, Any]])
 
   }
 
